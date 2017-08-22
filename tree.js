@@ -3,13 +3,13 @@ var canv = $canv[0];
 canv.width = $("#box").width();
 canv.height = $("#box").height();
 
-window.addEventListener('resize', function (ev) {
-  setTimeout(function () {
-    canv.width = $("#box").width();
-    canv.height = $("#box").height();
-    render($("#box").width(), $("#box").height());
-  }, 200);
-});
+// window.addEventListener('resize', function (ev) {
+//   setTimeout(function () {
+//     canv.width = $("#box").width();
+//     canv.height = $("#box").height();
+//     render($("#box").width(), $("#box").height());
+//   }, 200);
+// });
 
 render($("#box").width(), $("#box").height());
 
@@ -30,6 +30,14 @@ var mockData = {
         },
         {
           name: "永胜县公安局",
+          nodes: [
+            {
+              name: "永北镇派出所",
+            },
+            {
+              name: "三川镇派出所",
+            },
+          ]
         }
       ],
     },
@@ -46,16 +54,14 @@ $(document).off('mouseup.canv').on('mouseup.canv', function (ev) {
 });
 
 function render(w, h) {
-  $canv.translateCanvas({
-    translateX: 0.5, translateY: 0.5
-  });
-  $canv.removeLayer('maxBox');
+  // $canv.removeLayer('maxBox');
 
   $canv.drawRect({
     layer: true,
     draggable: true,
     dragGroups: ['maxBox'],
     groups: ['maxBox'],
+    name: "maxBox",
     fillStyle: '#555',
     x: -2 * w, y: -2 * h,
     width: 5 * w, height: 5 * h,
@@ -97,10 +103,18 @@ function render(w, h) {
   // });
 
   //绘制 文字和矩形
-  rectItem();
+  rectItem("五华区公安分局", {
+    x: 100,
+    y: 200,
+  }, $canv);
+
+  rectItem("永北镇派出所", {
+    x: 200,
+    y: 300,
+  }, $canv);
 }
 
-function rectItem() {
+function rectItem(text, pos, $canv) {
   //传进来data
   //文字,坐标
 
@@ -108,8 +122,15 @@ function rectItem() {
   //返回 {data,layer}
   var rectW = 110;
   var rectH = 44;
+  var posRes = $.extend({
+    x: 0,
+    y: 0
+  }, pos);
 
-  $canv
+  $canv.translateCanvas({
+    layer: true,
+    translateX: posRes.x, translateY: posRes.y
+  })
     .drawRect({
       layer: true,
       groups: ["maxBox"],
@@ -133,15 +154,16 @@ function rectItem() {
     .drawText({
       layer: true,
       groups: ["maxBox"],
-      name: 'myText',
       fillStyle: '#fff',
       strokeWidth: 2,
       x: rectW / 2, y: rectH / 2,
       fontSize: '14px',
-      maxWidth: 80,
       fontFamily: 'Verdana, sans-serif',
-      text: '云南省公安厅'
+      lineHeight: 1.2,
+      text: text
     });
 
-
+  $canv.restoreCanvas({
+    layer: true
+  });
 }
