@@ -1,15 +1,22 @@
 var $canv = $("#treecanvas");
 var canv = $canv[0];
+var winW = $("#box").width();
+var winH = $("#box").height();
+canv.width = winW;
+canv.height = winH;
+
 canv.width = $("#box").width();
 canv.height = $("#box").height();
 
-// window.addEventListener('resize', function (ev) {
-//   setTimeout(function () {
-//     canv.width = $("#box").width();
-//     canv.height = $("#box").height();
-//     render($("#box").width(), $("#box").height());
-//   }, 200);
-// });
+window.addEventListener('resize', function (ev) {
+  setTimeout(function () {
+    winW = $("#box").width();
+    winH = $("#box").height();
+    canv.width = winW;
+    canv.height = winH;
+    $canv.drawLayers();
+  }, 150);
+});
 
 render($("#box").width(), $("#box").height());
 
@@ -54,8 +61,6 @@ $(document).off('mouseup.canv').on('mouseup.canv', function (ev) {
 });
 
 function render(w, h) {
-  // $canv.removeLayer('maxBox');
-
   $canv.drawRect({
     layer: true,
     draggable: true,
@@ -104,8 +109,8 @@ function render(w, h) {
 
   //绘制 文字和矩形
   rectItem("五华区公安分局", {
-    x: 100,
-    y: 200,
+    x: 0,
+    y: 0,
   }, $canv);
 
   rectItem("永北镇派出所", {
@@ -117,6 +122,7 @@ function render(w, h) {
 function rectItem(text, pos, $canv) {
   //传进来data
   //文字,坐标
+  //坐标为 顶边中点
 
   //绘制 文字和矩形
   //返回 {data,layer}
@@ -129,7 +135,7 @@ function rectItem(text, pos, $canv) {
 
   $canv.translateCanvas({
     layer: true,
-    translateX: posRes.x, translateY: posRes.y
+    translateX: posRes.x - rectW / 2, translateY: posRes.y
   })
     .drawRect({
       layer: true,
@@ -162,7 +168,6 @@ function rectItem(text, pos, $canv) {
       lineHeight: 1.2,
       text: text
     });
-  console.log(1);
   $canv.restoreCanvas({
     layer: true
   });
