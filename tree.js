@@ -79,7 +79,7 @@ function stepFnY(mockData, deep, parentData) {
   for (var i = 0; i < mockData.length; i++) {
     var item = mockData[i];
     var itemPos = {
-      x: i * disItmeX + itemW / 2,
+      x: 0,
       y: deep * disItmeY
     };
     item.text = item.name;
@@ -121,6 +121,15 @@ $(document).off('mouseup.canv').on('mouseup.canv', function (ev) {
 });
 
 function render(w, h) {
+  //每个节点宽高
+  var itemW = 110;
+  var itemH = 44;
+
+  //每个节点位置差
+  var disItmeY = 70;
+  var disItmeX = 136;
+
+
   $canv.drawRect({
     layer: true,
     draggable: true,
@@ -151,6 +160,7 @@ function render(w, h) {
     var arr = DATA[i];
     for (var j = 0; j < arr.length; j++) {
       var item = arr[j];
+      item.pos.x = j * disItmeX + itemW / 2;
       rectItem(item.text, item.pos, $canv);
     }
   }
