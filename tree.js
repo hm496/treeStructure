@@ -162,7 +162,7 @@ function rectItem(text, pos, $canv) {
       lineHeight: 1.2,
       text: text
     });
-
+  console.log(1);
   $canv.restoreCanvas({
     layer: true
   });
