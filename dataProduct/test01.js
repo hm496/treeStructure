@@ -44,50 +44,7 @@ var mockData = [
     name: "云南省听听听"
   }
 ];
-
-//盒子总宽度
-var boxW = 800;
-//每个节点宽高
-var itemW = 110;
-var itemH = 44;
-
-//每个节点高度差
-var disItmeY = 142;
-
-
 var DATA = [];
-var deep = 0;
-//第一次只生成纵坐标y
-// for (var i = 0; i < mockData.length; i++) {
-//   var item = mockData[i];
-//   DATA[deep] = DATA[deep] || [];
-//   DATA[deep].push({
-//     id: item.id,
-//     text: item.name,
-//     parentPos: null,
-//     pos: {
-//       x: 0,
-//       y: deep * disItmeY
-//     }
-//   });
-//   if (item.nodes) {
-//     //深度加1
-//     var adeep = (deep + 1);
-//     for (var i = 0; i < mockData.length; i++) {
-//       var item = mockData[i];
-//       DATA[adeep] = DATA[adeep] || [];
-//       DATA[adeep].push({
-//         id: item.id,
-//         text: item.name,
-//         parentPos: null,
-//         pos: {
-//           x: 0,
-//           y: adeep * disItmeY
-//         }
-//       });
-//     }
-//   }
-// }
 
 function stepFnY(mockData, deep, parentData) {
   //每个节点宽高
@@ -95,7 +52,7 @@ function stepFnY(mockData, deep, parentData) {
   var itemH = 44;
 
   //每个节点位置差
-  var disItmeY = 142;
+  var disItmeY = 70;
   var disItmeX = 136;
 
   for (var i = 0; i < mockData.length; i++) {

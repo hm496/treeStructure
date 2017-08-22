@@ -18,39 +18,99 @@ window.addEventListener('resize', function (ev) {
   }, 150);
 });
 
+
+var mockData = [
+  {
+    id: 1,
+    name: "云南省公安厅",
+    nodes: [
+      {
+        id: 2,
+        name: "昆明市公安局",
+        nodes: [
+          {
+            id: 8,
+            name: "五华区公安分局"
+          },
+        ]
+      },
+      {
+        id: 3,
+        name: "丽江市公安局",
+        nodes: [
+          {
+            id: 4,
+            name: "古城区公安分局",
+          },
+          {
+            id: 5,
+            name: "永胜县公安局",
+            nodes: [
+              {
+                id: 6,
+                name: "永北镇派出所",
+              },
+              {
+                id: 7,
+                name: "三川镇派出所",
+              },
+            ]
+          }
+        ],
+      },
+    ],
+  },
+  {
+    id: 9,
+    name: "云南省听听听"
+  }
+];
+var DATA = [];
+
+function stepFnY(mockData, deep, parentData) {
+  //每个节点宽高
+  var itemW = 110;
+  var itemH = 44;
+
+  //每个节点位置差
+  var disItmeY = 70;
+  var disItmeX = 136;
+
+  for (var i = 0; i < mockData.length; i++) {
+    var item = mockData[i];
+    var itemPos = {
+      x: i * disItmeX + itemW / 2,
+      y: deep * disItmeY
+    };
+    item.text = item.name;
+    var pid = null;
+    if (parentData) {
+      pid = parentData.id || null;
+    }
+
+    DATA[deep] = DATA[deep] || [];
+    DATA[deep].push(
+      Object.assign({}, item, {
+        pid: pid,
+        pos: itemPos,
+        parentData: parentData,
+      })
+    );
+    if (item.nodes) {
+      //parent传给child
+      var P2C_Data = Object.assign({}, item, {
+        pos: itemPos,
+        nodes: null
+      });
+      stepFnY(item.nodes, (deep + 1), P2C_Data);
+    }
+  }
+}
+
+stepFnY(mockData, 0, null);
+
+console.log(DATA);
 render($("#box").width(), $("#box").height());
-
-var mockData = {
-  name: "云南省公安厅",
-  nodes: [
-    {
-      name: "昆明市公安局",
-      nodes: [
-        { name: "五华区公安分局" },
-      ]
-    },
-    {
-      name: "丽江市公安局",
-      nodes: [
-        {
-          name: "古城区公安分局",
-        },
-        {
-          name: "永胜县公安局",
-          nodes: [
-            {
-              name: "永北镇派出所",
-            },
-            {
-              name: "三川镇派出所",
-            },
-          ]
-        }
-      ],
-    },
-  ],
-};
-
 //光标复位
 $(document).off('mouseup.canv').on('mouseup.canv', function (ev) {
   if ($canv.css("cursor") === "move") {
@@ -87,15 +147,23 @@ function render(w, h) {
   });
 
   //绘制 文字和矩形
-  rectItem("五华区公安分局", {
-    x: 0,
-    y: 0,
-  }, $canv);
+  for (var i = 0; i < DATA.length; i++) {
+    var arr = DATA[i];
+    for (var j = 0; j < arr.length; j++) {
+      var item = arr[j];
+      rectItem(item.text, item.pos, $canv);
+    }
+  }
 
-  rectItem("永北镇派出所", {
-    x: 200,
-    y: 300,
-  }, $canv);
+  // rectItem("五华区公安分局", {
+  //   x: 0,
+  //   y: 0,
+  // }, $canv);
+  //
+  // rectItem("永北镇派出所", {
+  //   x: 200,
+  //   y: 300,
+  // }, $canv);
 }
 
 function rectItem(text, pos, $canv) {
@@ -147,7 +215,7 @@ function rectItem(text, pos, $canv) {
       lineHeight: 1.2,
       text: text
     });
-  
+
   $canv.restoreCanvas({
     layer: true
   });
