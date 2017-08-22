@@ -86,27 +86,6 @@ function render(w, h) {
     }
   });
 
-
-  //移动
-  // $('canvas').translateCanvas({
-  //   translateX: 200, translateY: 100
-  // });
-  // $canv.restoreCanvas();
-
-  // $canv.drawRect({
-  //   layer: true,
-  //   groups: ['maxBox'],
-  //   fillStyle: 'black',
-  //   x: 200, y: 200,
-  //   width: 50, height: 50
-  // }).drawArc({
-  //   layer: true,
-  //   groups: ['maxBox'],
-  //   fillStyle: 'black',
-  //   x: 100, y: 100,
-  //   radius: 50
-  // });
-
   //绘制 文字和矩形
   rectItem("五华区公安分局", {
     x: 0,
@@ -168,6 +147,7 @@ function rectItem(text, pos, $canv) {
       lineHeight: 1.2,
       text: text
     });
+  
   $canv.restoreCanvas({
     layer: true
   });
