@@ -19,68 +19,101 @@ window.addEventListener('resize', function (ev) {
 });
 
 
+// var mockData = [
+//   {
+//     id: 1,
+//     name: "云南省公安厅",
+//     nodes: [
+//       {
+//         id: 2,
+//         name: "昆明市公安局",
+//         nodes: [
+//           {
+//             id: 8,
+//             name: "五华区公安分局"
+//           },
+//         ]
+//       },
+//       {
+//         id: 3,
+//         name: "丽江市公安局",
+//         nodes: [
+//           {
+//             id: 4,
+//             name: "古城区公安分局",
+//             nodes: [
+//               {
+//                 id: 10,
+//                 name: "古城区公安01",
+//               },
+//               {
+//                 id: 11,
+//                 name: "古城区公安02",
+//               },
+//             ]
+//           },
+//           {
+//             id: 5,
+//             name: "永胜县公安局",
+//             nodes: [
+//               {
+//                 id: 6,
+//                 name: "永胜县公安01",
+//               },
+//               {
+//                 id: 7,
+//                 name: "永胜县公安02",
+//               },
+//             ]
+//           }
+//         ],
+//       },
+//     ],
+//   }
+// ];
+
 var mockData = [
   {
     id: 1,
-    name: "云南省公安厅",
+    name: "0",
     nodes: [
       {
         id: 2,
-        name: "昆明市公安局",
-        nodes: [
-          {
-            id: 8,
-            name: "五华区公安分局"
-          },
-        ]
+        name: "01",
       },
       {
         id: 3,
-        name: "丽江市公安局",
+        name: "02",
         nodes: [
           {
-            id: 4,
-            name: "古城区公安分局",
-            nodes: [
-              {
-                id: 10,
-                name: "古城区公安01",
-              },
-              {
-                id: 11,
-                name: "古城区公安02",
-              },
-            ]
+            id: 5,
+            name: "021",
           },
           {
-            id: 5,
-            name: "永胜县公安局",
-            nodes: [
-              {
-                id: 6,
-                name: "永胜县公安01",
-              },
-              {
-                id: 7,
-                name: "永胜县公安02",
-              },
-            ]
-          }
+            id: 6,
+            name: "022",
+          },
         ],
       },
-    ],
+      {
+        id: 4,
+        name: "03",
+      },
+    ]
   }
 ];
 var DATA = [];
 
 function stepFnY(mockData, deep, parentData) {
-  //每个节点宽高
+//每个节点宽高
   var itemW = 110;
   var itemH = 44;
+//每个节点位置差
+  var marginX = 20;
+  var marginY = 26;
 
-  //每个节点位置差
-  var disItmeY = 70;
-  var disItmeX = 136;
+  var disItmeX = itemW + marginX;
+  var disItmeY = itemH + marginY;
 
   for (var i = 0; i < mockData.length; i++) {
     var item = mockData[i];
@@ -110,7 +143,7 @@ function stepFnY(mockData, deep, parentData) {
 }
 
 stepFnY(mockData, 0, null);
-console.log(DATA);//纵坐标生成END
+console.log(DATA);//生成纵坐标END
 
 //前提条件:数组中子集先后顺序,与相应父级先后顺序一致;相同父级的子元素相互紧靠
 //横坐标(只往右移)
@@ -120,16 +153,52 @@ console.log(DATA);//纵坐标生成END
 //向右移,需要将其右边元素全部右移,(找到需要右移的最左侧元素)
 //移动从最左侧元素开始
 //第一步找到这一行全部相同父级的子元素
-for (var i = 0; i < DATA[DATA.length - 1].length; i++) {
-  var arrT = DATA[DATA.length - 1];
-  var parentDataObj = {};
 
-  for (var i = 0; i < arrT.length; i++) {
-    var pid = arrT[i].parentData.id;
-    //parentDataObj.pid
-  }
 
+//每个节点宽高
+var itemW = 110;
+var itemH = 44;
+//每个节点位置差
+var marginX = 20;
+var marginY = 26;
+
+var disItmeX = itemW + marginX;
+var disItmeY = itemH + marginY;
+//生成横坐标
+
+
+var sumX = 0;
+for (var i = 0; i < DATA[2].length; i++) {
+  DATA[2][i].pos.x = i * disItmeX + itemW / 2;
+  sumX += DATA[2][i].pos.x;
 }
+DATA[2][0].parentData.sumWidth = DATA[2][0].parentData.sumWidth || 0;
+DATA[2][0].parentData.sumWidth = DATA[2][0].parentData.sumWidth + DATA[2].length * disItmeX;
+DATA[2][0].parentData.pos.x = sumX / DATA[2].length;
+console.log(DATA[2][0].parentData);
+
+var sumX = 0;
+var lastX = 0;
+for (var i = 0; i < DATA[1].length; i++) {
+  // debugger
+  var abc = DATA[1][i];
+  if (abc.sumWidth) {
+    abs.pos.lastX = abc.pos.x;
+    abc.pos.x = lastX + (abc.sumWidth - marginX) / 2;
+    var changedX = abc.pos.x - abs.pos.lastX;
+    //遍历所有子节点变化changedX
+    
+
+    lastX += abc.sumWidth;
+  } else {
+    abc.pos.x = lastX + itemW / 2;
+    lastX += disItmeX;
+  }
+  sumX += abc.pos.x;
+}
+DATA[1][0].parentData.pos.x = sumX / DATA[1].length;
+console.log(DATA[1][0].parentData);
+
 
 render($("#box").width(), $("#box").height());
 //光标复位
@@ -142,13 +211,15 @@ $(document).off('mouseup.canv').on('mouseup.canv', function (ev) {
 });
 
 function render(w, h) {
-  //每个节点宽高
+//每个节点宽高
   var itemW = 110;
   var itemH = 44;
+//每个节点位置差
+  var marginX = 20;
+  var marginY = 26;
 
-  //每个节点位置差
-  var disItmeY = 70;
-  var disItmeX = 136;
+  var disItmeX = itemW + marginX;
+  var disItmeY = itemH + marginY;
 
 
   $canv.drawRect({
@@ -181,7 +252,7 @@ function render(w, h) {
     var arr = DATA[i];
     for (var j = 0; j < arr.length; j++) {
       var item = arr[j];
-      item.pos.x = j * disItmeX + itemW / 2;
+      // item.pos.x = j * disItmeX + itemW / 2;
       rectItem(item, $canv);
     }
   }

@@ -127,4 +127,15 @@ for (var i = 0; i < DATA[DATA.length - 1].length; i++) {
 
 }
 
+function eachChild(parent, fn) {
+  if (parent.nodes) {
+    for (var i = 0; i < parent.nodes.length; i++) {
+      var child = parent.nodes[i];
+      fn && fn(child);
+      eachChild(child, fn);
+    }
+  }
+}
+
+
 console.log(pidArr);
