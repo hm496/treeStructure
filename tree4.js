@@ -8,8 +8,8 @@ canv.height = winH;
 canv.width = $("#box").width();
 canv.height = $("#box").height();
 
-window.addEventListener('resize', function (ev) {
-  setTimeout(function () {
+window.addEventListener('resize', function(ev) {
+  setTimeout(function() {
     winW = $("#box").width();
     winH = $("#box").height();
     canv.width = winW;
@@ -84,6 +84,20 @@ var mockData = [
           {
             id: "011",
             name: "011",
+            nodes: [
+              {
+                id: "0111",
+                name: "0111",
+              },
+              {
+                id: "0112",
+                name: "0112",
+              },
+              {
+                id: "0113",
+                name: "0113",
+              },
+            ]
           },
           {
             id: "012",
@@ -321,7 +335,7 @@ for (var i = 0; i < DATA[lineIndex].length; i++) {
     tempData.pos.x = lastX + (tempData.sumWidth - marginX) / 2;
     var changedX = tempData.pos.x - tempData.pos.lastX;
     //调整子节点
-    eachChild(tempData, function (child) {
+    eachChild(tempData, function(child) {
       child.pos.x += changedX;
     });
     lastX += tempData.sumWidth;
@@ -343,50 +357,56 @@ if (lastPid) {
 
 //处理倒数第三行 (正数第二行)
 //处理倒数第二行
-// var lastPid = null;
-// var lastParentData = null;
-// var sumXArr = [];
-// var sumWidth = 0;
-//
-// var lastX = 0;
-// var lineIndex = lineIndex - 1;
-// // debugger
-// for (var i = 0; i < DATA[lineIndex].length; i++) {
-//   var tempData = DATA[lineIndex][i];
-//   if (lastPid !== tempData.pid) {
-//     if (lastPid) {
-//       lastParentData.pos.x = findMid(sumXArr);
-//
-//       lastParentData.sumWidth = lastParentData.sumWidth || 0;
-//       lastParentData.sumWidth = lastParentData.sumWidth + sumWidth;
-//     }
-//     lastPid = tempData.pid;
-//     lastParentData = tempData.parentData;
-//     sumXArr = [];
-//     sumWidth = 0;
-//   }
-//   if (tempData.sumWidth) {
-//     tempData.pos.lastX = tempData.pos.x;
-//     tempData.pos.x = lastX + (tempData.sumWidth - marginX) / 2;
-//     var changedX = tempData.pos.x - tempData.pos.lastX;
-//     //调整子节点
-//     eachChild(tempData, function (child) {
-//       child.pos.x += changedX;
-//     });
-//     lastX += tempData.sumWidth;
-//   } else {
-//     tempData.pos.x = lastX + itemW / 2;
-//     lastX += disItmeX;
-//   }
-//   sumWidth += DATA[lineIndex][i].sumWidth || disItmeX;
-//   sumXArr.push(tempData.pos.x);
-// }
-// if (lastPid) {
-//   lastParentData.pos.x = findMid(sumXArr);
-//
-//   lastParentData.sumWidth = lastParentData.sumWidth || 0;
-//   lastParentData.sumWidth = lastParentData.sumWidth + sumWidth;
-// }
+var lastPid = null;
+var lastParentData = null;
+var sumXArr = [];
+var sumWidth = 0;
+
+var lastX = 0;
+var lineIndex = lineIndex - 1;
+// debugger
+for (var i = 0; i < DATA[lineIndex].length; i++) {
+  var tempData = DATA[lineIndex][i];
+  if (lastPid !== tempData.pid) {
+    if (lastPid) {
+      lastParentData.pos.x = findMid(sumXArr);
+
+      lastParentData.sumWidth = lastParentData.sumWidth || 0;
+      lastParentData.sumWidth = lastParentData.sumWidth + sumWidth;
+    }
+    lastPid = tempData.pid;
+    lastParentData = tempData.parentData;
+    sumXArr = [];
+    sumWidth = 0;
+  }
+  if (tempData.sumWidth) {
+    tempData.pos.lastX = tempData.pos.x;
+    if (lastX === 0) {
+      tempData.pos.x = tempData.pos.x;
+    } else {
+      tempData.pos.x = lastX + (tempData.sumWidth - marginX) / 2;
+    }
+    //
+    // tempData.pos.x = lastX + (tempData.sumWidth - marginX) / 2;
+    var changedX = tempData.pos.x - tempData.pos.lastX;
+    //调整子节点
+    eachChild(tempData, function(child) {
+      child.pos.x += changedX;
+    });
+    lastX += tempData.sumWidth;
+  } else {
+    tempData.pos.x = lastX + itemW / 2;
+    lastX += disItmeX;
+  }
+  sumWidth += DATA[lineIndex][i].sumWidth || disItmeX;
+  sumXArr.push(tempData.pos.x);
+}
+if (lastPid) {
+  lastParentData.pos.x = findMid(sumXArr);
+
+  lastParentData.sumWidth = lastParentData.sumWidth || 0;
+  lastParentData.sumWidth = lastParentData.sumWidth + sumWidth;
+}
 
 
 // DATA[1][0].parentData.pos.x = findMid(sumXArr);
@@ -421,7 +441,7 @@ console.log(DATA[2][0].parentData);
 //渲染canvas
 render($("#box").width(), $("#box").height());
 //光标复位
-$(document).off('mouseup.canv').on('mouseup.canv', function (ev) {
+$(document).off('mouseup.canv').on('mouseup.canv', function(ev) {
   if ($canv.css("cursor") === "move") {
     $canv.css({
       cursor: "auto"
@@ -451,14 +471,14 @@ function render(w, h) {
     x: -2 * w, y: -2 * h,
     width: 5 * w, height: 5 * h,
     fromCenter: false,
-    dragstart: function (layer) {
+    dragstart: function(layer) {
       $canv.css({
         cursor: "move"
       });
     },
-    drag: function (layer) {
+    drag: function(layer) {
     },
-    dragstop: function (layer) {
+    dragstop: function(layer) {
       $canv.setLayer(layer, {
         x: -2 * w, y: -2 * h,
       })
@@ -518,17 +538,17 @@ function rectItem(item, $canv) {
       height: rectH,
       cornerRadius: 10,
       fromCenter: false,
-      mouseover: function (layer) {
+      mouseover: function(layer) {
         $canv.css({
           cursor: "pointer"
         })
       },
-      mouseout: function (layer) {
+      mouseout: function(layer) {
         $canv.css({
           cursor: "auto"
         })
       },
-      click: function (layer) {
+      click: function(layer) {
         console.log(item);
       }
     })
