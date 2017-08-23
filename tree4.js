@@ -529,7 +529,7 @@ function rectItem(item, $canv) {
         })
       },
       click: function (layer) {
-        // console.log(item);
+        console.log(item);
       }
     })
     .drawText({
