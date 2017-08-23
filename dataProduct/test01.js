@@ -20,6 +20,16 @@ var mockData = [
           {
             id: 4,
             name: "古城区公安分局",
+            nodes: [
+              {
+                id: 10,
+                name: "古城区公安01",
+              },
+              {
+                id: 11,
+                name: "古城区公安02",
+              },
+            ]
           },
           {
             id: 5,
@@ -27,21 +37,17 @@ var mockData = [
             nodes: [
               {
                 id: 6,
-                name: "永北镇派出所",
+                name: "永胜县公安01",
               },
               {
                 id: 7,
-                name: "三川镇派出所",
+                name: "永胜县公安02",
               },
             ]
           }
         ],
       },
     ],
-  },
-  {
-    id: 9,
-    name: "云南省听听听"
   }
 ];
 var DATA = [];
@@ -58,7 +64,7 @@ function stepFnY(mockData, deep, parentData) {
   for (var i = 0; i < mockData.length; i++) {
     var item = mockData[i];
     var itemPos = {
-      x: i * disItmeX + itemW / 2,
+      x: 0,
       y: deep * disItmeY
     };
     item.text = item.name;
@@ -79,7 +85,7 @@ function stepFnY(mockData, deep, parentData) {
       //parent传给child
       var P2C_Data = Object.assign({}, item, {
         pos: itemPos,
-        nodes: null
+        nodes: true
       });
       stepFnY(item.nodes, (deep + 1), P2C_Data);
     }
@@ -87,26 +93,30 @@ function stepFnY(mockData, deep, parentData) {
 }
 
 stepFnY(mockData, 0, null);
+// console.log(DATA);//纵坐标生成END
 
-console.log(DATA);
+//前提条件:数组中子集先后顺序,与相应父级先后顺序一致;相同父级的子元素相互紧靠
+//横坐标(只往右移)
+//先遍历最下边一行
+//向右移优先级: 先移子行 > 最后移父行
 
+//向右移,需要将其右边元素全部右移,(找到需要右移的最左侧元素)
+//移动从最左侧元素开始
+//第一步找到这一行全部相同父级的子元素
+for (var i = 0; i < DATA[DATA.length - 1].length; i++) {
+  var arrT = DATA[DATA.length - 1];
 
-//希望生成数组
-/*
- 每一行是一个数组
+  var pidArr = [];
+  for (var i = 0; i < arrT.length; i++) {
+    var pid = arrT[i].parentData.id;
+    if (pidArr.length > 0) {
+      var lastPid = pidArr[pidArr.length - 1];
+      if (lastPid === pid) {
+        continue;
+      }
+    }
+    pidArr.push(arrT[i].parentData.id);
+  }
+}
 
- //整体结构
- [
- []
- ,
- []
- ,
- []
- ]
- //具体包含
- id,父级坐标,自己坐标,文字
- {
-
-
- }
- */
+console.log(pidArr);

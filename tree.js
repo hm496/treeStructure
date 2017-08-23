@@ -41,6 +41,16 @@ var mockData = [
           {
             id: 4,
             name: "古城区公安分局",
+            nodes: [
+              {
+                id: 10,
+                name: "古城区公安01",
+              },
+              {
+                id: 11,
+                name: "古城区公安02",
+              },
+            ]
           },
           {
             id: 5,
@@ -48,21 +58,17 @@ var mockData = [
             nodes: [
               {
                 id: 6,
-                name: "永北镇派出所",
+                name: "永胜县公安01",
               },
               {
                 id: 7,
-                name: "三川镇派出所",
+                name: "永胜县公安02",
               },
             ]
           }
         ],
       },
     ],
-  },
-  {
-    id: 9,
-    name: "云南省听听听"
   }
 ];
 var DATA = [];
@@ -100,7 +106,7 @@ function stepFnY(mockData, deep, parentData) {
       //parent传给child
       var P2C_Data = Object.assign({}, item, {
         pos: itemPos,
-        nodes: null
+        nodes: true
       });
       stepFnY(item.nodes, (deep + 1), P2C_Data);
     }
@@ -108,8 +114,27 @@ function stepFnY(mockData, deep, parentData) {
 }
 
 stepFnY(mockData, 0, null);
+console.log(DATA);//纵坐标生成END
 
-console.log(DATA);
+//前提条件:数组中子集先后顺序,与相应父级先后顺序一致;相同父级的子元素相互紧靠
+//横坐标(只往右移)
+//先遍历最下边一行
+//向右移优先级: 先移子行 > 最后移父行
+
+//向右移,需要将其右边元素全部右移,(找到需要右移的最左侧元素)
+//移动从最左侧元素开始
+//第一步找到这一行全部相同父级的子元素
+for (var i = 0; i < DATA[DATA.length - 1].length; i++) {
+  var arrT = DATA[DATA.length - 1];
+  var parentDataObj = {};
+
+  for (var i = 0; i < arrT.length; i++) {
+    var pid = arrT[i].parentData.id;
+    //parentDataObj.pid
+  }
+
+}
+
 render($("#box").width(), $("#box").height());
 //光标复位
 $(document).off('mouseup.canv').on('mouseup.canv', function (ev) {
@@ -161,7 +186,7 @@ function render(w, h) {
     for (var j = 0; j < arr.length; j++) {
       var item = arr[j];
       item.pos.x = j * disItmeX + itemW / 2;
-      rectItem(item.text, item.pos, $canv);
+      rectItem(item, $canv);
     }
   }
 
@@ -176,10 +201,12 @@ function render(w, h) {
   // }, $canv);
 }
 
-function rectItem(text, pos, $canv) {
+function rectItem(item, $canv) {
   //传进来data
   //文字,坐标
   //坐标为 顶边中点
+  var pos = item.pos;
+  var text = item.text;
 
   //绘制 文字和矩形
   //返回 {data,layer}
@@ -192,11 +219,12 @@ function rectItem(text, pos, $canv) {
 
   $canv.translateCanvas({
     layer: true,
+    groups: ["maxBox", "element"],
     translateX: posRes.x - rectW / 2, translateY: posRes.y
   })
     .drawRect({
       layer: true,
-      groups: ["maxBox"],
+      groups: ["maxBox", "element"],
       fillStyle: '#0092df',
       x: 0, y: 0,
       width: rectW,
@@ -213,10 +241,13 @@ function rectItem(text, pos, $canv) {
           cursor: "auto"
         })
       },
+      click: function (layer) {
+        //console.log(item);
+      }
     })
     .drawText({
       layer: true,
-      groups: ["maxBox"],
+      groups: ["maxBox", "element"],
       fillStyle: '#fff',
       strokeWidth: 2,
       x: rectW / 2, y: rectH / 2,
@@ -227,6 +258,7 @@ function rectItem(text, pos, $canv) {
     });
 
   $canv.restoreCanvas({
-    layer: true
+    layer: true,
+    groups: ["maxBox", "element"],
   });
 }
