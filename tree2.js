@@ -124,6 +124,23 @@ function eachChild(parent, fn) {
     }
   }
 }
+//计算中点坐标
+function getMid(x1, x2) {
+  if (x1 > x2) {
+    var greater = x1;
+    var less = x2;
+  } else {
+    greater = x2;
+    less = x1;
+  }
+  return (greater - less) / 2 + less;
+}
+function findMid(arr) {
+  var min = Math.min.apply(Math, arr);
+  var max = Math.max.apply(Math, arr);
+  return getMid(min, max);
+}
+
 
 function stepFnY(mockData, deep, parentData) {
 //每个节点宽高
@@ -234,7 +251,7 @@ if (lastPid) {
 // DATA[2][0].parentData.pos.x = sumX / DATA[2].length;
 console.log(DATA[2][0].parentData);
 //调整父级和子级 横坐标
-var sumX = 0;
+var sumXArr = [];
 var lastX = 0;
 for (var i = 0; i < DATA[1].length; i++) {
   // debugger
@@ -252,9 +269,9 @@ for (var i = 0; i < DATA[1].length; i++) {
     tempData.pos.x = lastX + itemW / 2;
     lastX += disItmeX;
   }
-  sumX += tempData.pos.x;
+  sumXArr.push(tempData.pos.x);
 }
-DATA[1][0].parentData.pos.x = sumX / DATA[1].length;
+DATA[1][0].parentData.pos.x = findMid(sumXArr);
 // console.log(DATA[1][0].parentData);
 
 
