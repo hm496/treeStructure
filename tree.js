@@ -96,19 +96,15 @@ function stepFnY(mockData, deep, parentData) {
 
     DATA[deep] = DATA[deep] || [];
     DATA[deep].push(
-      Object.assign({}, item, {
+      Object.assign(item, {
         pid: pid,
         pos: itemPos,
         parentData: parentData,
       })
     );
     if (item.nodes) {
-      //parent传给child
-      var P2C_Data = Object.assign({}, item, {
-        pos: itemPos,
-        nodes: true
-      });
-      stepFnY(item.nodes, (deep + 1), P2C_Data);
+      //parent传给child (item)
+      stepFnY(item.nodes, (deep + 1), item);
     }
   }
 }
@@ -205,6 +201,7 @@ function rectItem(item, $canv) {
   //传进来data
   //文字,坐标
   //坐标为 顶边中点
+  //item原始数据对象
   var pos = item.pos;
   var text = item.text;
 
@@ -242,7 +239,7 @@ function rectItem(item, $canv) {
         })
       },
       click: function (layer) {
-        //console.log(item);
+        // console.log(item);
       }
     })
     .drawText({

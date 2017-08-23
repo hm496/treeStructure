@@ -75,19 +75,15 @@ function stepFnY(mockData, deep, parentData) {
 
     DATA[deep] = DATA[deep] || [];
     DATA[deep].push(
-      Object.assign({}, item, {
+      Object.assign(item, {
         pid: pid,
         pos: itemPos,
         parentData: parentData,
       })
     );
     if (item.nodes) {
-      //parent传给child
-      var P2C_Data = Object.assign({}, item, {
-        pos: itemPos,
-        nodes: true
-      });
-      stepFnY(item.nodes, (deep + 1), P2C_Data);
+      //parent传给child (item)
+      stepFnY(item.nodes, (deep + 1), item);
     }
   }
 }
@@ -104,19 +100,31 @@ stepFnY(mockData, 0, null);
 //移动从最左侧元素开始
 //第一步找到这一行全部相同父级的子元素
 for (var i = 0; i < DATA[DATA.length - 1].length; i++) {
-  var arrT = DATA[DATA.length - 1];
+  var childArr = DATA[DATA.length - 1];
 
   var pidArr = [];
-  for (var i = 0; i < arrT.length; i++) {
-    var pid = arrT[i].parentData.id;
+  for (var i = 0; i < childArr.length; i++) {
+    var pid = childArr[i].parentData.id;
     if (pidArr.length > 0) {
       var lastPid = pidArr[pidArr.length - 1];
       if (lastPid === pid) {
         continue;
       }
     }
-    pidArr.push(arrT[i].parentData.id);
+    pidArr.push(childArr[i].parentData.id);
   }
+
+  for (var i = 0; i < pidArr.length; i++) {
+    //取出一个pid
+    var pid = pidArr[i];
+    for (var i = 0; i < childArr.length; i++) {
+      childArr[i];
+
+
+    }
+
+  }
+
 }
 
 console.log(pidArr);
