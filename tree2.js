@@ -103,11 +103,25 @@ var mockData = [
             id: "022",
             name: "022",
           },
+          {
+            id: "023",
+            name: "023",
+          },
         ],
       },
       {
         id: "03",
         name: "03",
+        nodes: [
+          {
+            id: "031",
+            name: "031",
+          },
+          {
+            id: "032",
+            name: "032",
+          },
+        ],
       },
     ]
   }
@@ -275,6 +289,7 @@ DATA[1][0].parentData.pos.x = findMid(sumXArr);
 // console.log(DATA[1][0].parentData);
 
 
+//渲染canvas
 render($("#box").width(), $("#box").height());
 //光标复位
 $(document).off('mouseup.canv').on('mouseup.canv', function (ev) {
