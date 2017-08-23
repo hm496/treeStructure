@@ -104,6 +104,17 @@ var mockData = [
 ];
 var DATA = [];
 
+//遍历所有子节点
+function eachChild(parent, fn) {
+  if (parent.nodes) {
+    for (var i = 0; i < parent.nodes.length; i++) {
+      var child = parent.nodes[i];
+      fn && fn(child);
+      eachChild(child, fn);
+    }
+  }
+}
+
 function stepFnY(mockData, deep, parentData) {
 //每个节点宽高
   var itemW = 110;
@@ -181,20 +192,21 @@ var sumX = 0;
 var lastX = 0;
 for (var i = 0; i < DATA[1].length; i++) {
   // debugger
-  var abc = DATA[1][i];
-  if (abc.sumWidth) {
-    abs.pos.lastX = abc.pos.x;
-    abc.pos.x = lastX + (abc.sumWidth - marginX) / 2;
-    var changedX = abc.pos.x - abs.pos.lastX;
+  var tempData = DATA[1][i];
+  if (tempData.sumWidth) {
+    tempData.pos.lastX = tempData.pos.x;
+    tempData.pos.x = lastX + (tempData.sumWidth - marginX) / 2;
+    var changedX = tempData.pos.x - tempData.pos.lastX;
     //遍历所有子节点变化changedX
-    
-
-    lastX += abc.sumWidth;
+    eachChild(tempData, function (child) {
+      child.pos.x += changedX;
+    });
+    lastX += tempData.sumWidth;
   } else {
-    abc.pos.x = lastX + itemW / 2;
+    tempData.pos.x = lastX + itemW / 2;
     lastX += disItmeX;
   }
-  sumX += abc.pos.x;
+  sumX += tempData.pos.x;
 }
 DATA[1][0].parentData.pos.x = sumX / DATA[1].length;
 console.log(DATA[1][0].parentData);
