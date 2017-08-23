@@ -74,29 +74,39 @@ window.addEventListener('resize', function (ev) {
 
 var mockData = [
   {
-    id: 1,
+    id: "0",
     name: "0",
     nodes: [
       {
-        id: 2,
+        id: "01",
         name: "01",
+        nodes: [
+          {
+            id: "011",
+            name: "011",
+          },
+          {
+            id: "012",
+            name: "012",
+          }
+        ],
       },
       {
-        id: 3,
+        id: "02",
         name: "02",
         nodes: [
           {
-            id: 5,
+            id: "021",
             name: "021",
           },
           {
-            id: 6,
+            id: "022",
             name: "022",
           },
         ],
       },
       {
-        id: 4,
+        id: "03",
         name: "03",
       },
     ]
@@ -156,7 +166,7 @@ function stepFnY(mockData, deep, parentData) {
 stepFnY(mockData, 0, null);
 console.log(DATA);//生成纵坐标END
 
-//前提条件:数组中子集先后顺序,与相应父级先后顺序一致;相同父级的子元素相互紧靠
+//前提条件:数组中子级先后顺序,与相应父级先后顺序一致;相同父级的子元素相互紧靠
 //横坐标(只往右移)
 //先遍历最下边一行
 //向右移优先级: 先移子行 > 最后移父行
@@ -177,17 +187,53 @@ var disItmeX = itemW + marginX;
 var disItmeY = itemH + marginY;
 //生成横坐标
 
+//生成父级初始 横坐标
 
+//找到相同父级的元素,设置父级横坐标pos.x和sumWidth
+var lastPid = null;
+var lastParentData = null;
 var sumX = 0;
+var sumWidth = 0;
+var childLength = 0;//同父级子级数量
+
 for (var i = 0; i < DATA[2].length; i++) {
+  //因为是最后一行,直接i * disItmeX + itemW / 2;
   DATA[2][i].pos.x = i * disItmeX + itemW / 2;
+  if (lastPid !== DATA[2][i].pid) {
+    if (lastPid) {
+      console.log(lastParentData, childLength, sumX);
+      lastParentData.pos.x = sumX / childLength;
+      lastParentData.sumWidth = lastParentData.sumWidth || 0;
+      lastParentData.sumWidth = lastParentData.sumWidth + sumWidth;
+    }
+    sumX = 0;
+    sumWidth = 0;
+    childLength = 0;
+    lastParentData = DATA[2][i].parentData;
+    lastPid = DATA[2][i].pid;
+  }
+  childLength++;
+  sumWidth += DATA[2][i].sumWidth || disItmeX;
   sumX += DATA[2][i].pos.x;
 }
-DATA[2][0].parentData.sumWidth = DATA[2][0].parentData.sumWidth || 0;
-DATA[2][0].parentData.sumWidth = DATA[2][0].parentData.sumWidth + DATA[2].length * disItmeX;
-DATA[2][0].parentData.pos.x = sumX / DATA[2].length;
-console.log(DATA[2][0].parentData);
 
+console.log(lastParentData, childLength, sumX);
+if (lastPid) {
+  lastParentData.pos.x = sumX / childLength;
+  lastParentData.sumWidth = lastParentData.sumWidth || 0;
+  lastParentData.sumWidth = lastParentData.sumWidth + sumWidth;
+}
+
+// var sumX = 0;
+// for (var i = 0; i < DATA[2].length; i++) {
+//   DATA[2][i].pos.x = i * disItmeX + itemW / 2;
+//   sumX += DATA[2][i].pos.x;
+// }
+// DATA[2][0].parentData.sumWidth = DATA[2][0].parentData.sumWidth || 0;
+// DATA[2][0].parentData.sumWidth = DATA[2][0].parentData.sumWidth + DATA[2].length * disItmeX;
+// DATA[2][0].parentData.pos.x = sumX / DATA[2].length;
+console.log(DATA[2][0].parentData);
+//调整父级和子级 横坐标
 var sumX = 0;
 var lastX = 0;
 for (var i = 0; i < DATA[1].length; i++) {
@@ -209,7 +255,7 @@ for (var i = 0; i < DATA[1].length; i++) {
   sumX += tempData.pos.x;
 }
 DATA[1][0].parentData.pos.x = sumX / DATA[1].length;
-console.log(DATA[1][0].parentData);
+// console.log(DATA[1][0].parentData);
 
 
 render($("#box").width(), $("#box").height());
