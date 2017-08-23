@@ -298,6 +298,7 @@ if (lastPid) {
 var lastPid = null;
 var lastParentData = null;
 var sumXArr = [];
+var sumWidth = 0;
 var lastX = 0;
 var lineIndex = finalIndex - 1;
 // debugger
@@ -306,10 +307,14 @@ for (var i = 0; i < DATA[lineIndex].length; i++) {
   if (lastPid !== tempData.pid) {
     if (lastPid) {
       lastParentData.pos.x = findMid(sumXArr);
+
+      lastParentData.sumWidth = lastParentData.sumWidth || 0;
+      lastParentData.sumWidth = lastParentData.sumWidth + sumWidth;
     }
     lastPid = tempData.pid;
     lastParentData = tempData.parentData;
     sumXArr = [];
+    sumWidth = 0;
   }
   if (tempData.sumWidth) {
     tempData.pos.lastX = tempData.pos.x;
@@ -324,49 +329,64 @@ for (var i = 0; i < DATA[lineIndex].length; i++) {
     tempData.pos.x = lastX + itemW / 2;
     lastX += disItmeX;
   }
+  sumWidth += DATA[lineIndex][i].sumWidth || disItmeX;
   sumXArr.push(tempData.pos.x);
 }
 if (lastPid) {
   lastParentData.pos.x = findMid(sumXArr);
+
+  lastParentData.sumWidth = lastParentData.sumWidth || 0;
+  lastParentData.sumWidth = lastParentData.sumWidth + sumWidth;
 }
 //父级居中
 
 
 //处理倒数第三行 (正数第二行)
-// var lastPid = null;
-// var lastParentData = null;
-// var sumXArr = [];
-// var lastX = 0;
-// lineIndex = lineIndex - 1;
-// // debugger
-// for (var i = 0; i < DATA[lineIndex].length; i++) {
-//   var tempData = DATA[lineIndex][i];
-//   if (lastPid !== tempData.pid) {
-//     if (lastPid) {
-//       lastParentData.pos.x = findMid(sumXArr);
-//     }
-//     lastPid = tempData.pid;
-//     lastParentData = tempData.parentData;
-//     sumXArr = [];
-//   }
-//   if (tempData.sumWidth) {
-//     tempData.pos.lastX = tempData.pos.x;
-//     tempData.pos.x = lastX + (tempData.sumWidth - marginX) / 2;
-//     var changedX = tempData.pos.x - tempData.pos.lastX;
-//     //调整子节点
-//     eachChild(tempData, function (child) {
-//       child.pos.x += changedX;
-//     });
-//     lastX += tempData.sumWidth;
-//   } else {
-//     tempData.pos.x = lastX + itemW / 2;
-//     lastX += disItmeX;
-//   }
-//   sumXArr.push(tempData.pos.x);
-// }
-// if (lastPid) {
-//   lastParentData.pos.x = findMid(sumXArr);
-// }
+//处理倒数第二行
+var lastPid = null;
+var lastParentData = null;
+var sumXArr = [];
+var sumWidth = 0;
+
+var lastX = 0;
+var lineIndex = lineIndex - 1;
+// debugger
+for (var i = 0; i < DATA[lineIndex].length; i++) {
+  var tempData = DATA[lineIndex][i];
+  if (lastPid !== tempData.pid) {
+    if (lastPid) {
+      lastParentData.pos.x = findMid(sumXArr);
+
+      lastParentData.sumWidth = lastParentData.sumWidth || 0;
+      lastParentData.sumWidth = lastParentData.sumWidth + sumWidth;
+    }
+    lastPid = tempData.pid;
+    lastParentData = tempData.parentData;
+    sumXArr = [];
+    sumWidth = 0;
+  }
+  if (tempData.sumWidth) {
+    tempData.pos.lastX = tempData.pos.x;
+    tempData.pos.x = lastX + (tempData.sumWidth - marginX) / 2;
+    var changedX = tempData.pos.x - tempData.pos.lastX;
+    //调整子节点
+    eachChild(tempData, function (child) {
+      child.pos.x += changedX;
+    });
+    lastX += tempData.sumWidth;
+  } else {
+    tempData.pos.x = lastX + itemW / 2;
+    lastX += disItmeX;
+  }
+  sumWidth += DATA[lineIndex][i].sumWidth || disItmeX;
+  sumXArr.push(tempData.pos.x);
+}
+if (lastPid) {
+  lastParentData.pos.x = findMid(sumXArr);
+
+  lastParentData.sumWidth = lastParentData.sumWidth || 0;
+  lastParentData.sumWidth = lastParentData.sumWidth + sumWidth;
+}
 
 
 // DATA[1][0].parentData.pos.x = findMid(sumXArr);
