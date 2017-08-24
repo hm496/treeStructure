@@ -205,7 +205,7 @@ function stepFnY(mockData, deep, parentData) {
 
     DATA[deep] = DATA[deep] || [];
     DATA[deep].push(
-      Object.assign(item, {
+      $.extend(item, {
         pid: pid,
         pos: itemPos,
         parentData: parentData,
