@@ -1,7 +1,7 @@
 function treeStructure($canv, options, data) {
   var options = options || {};
 
-  //每个节点宽高设置,间距设置
+  //每个节点宽高设置,间距设置-------------
   //每个节点宽高
   var itemW = options.itemW || 110;
   var itemH = options.itemH || 44;
@@ -11,14 +11,14 @@ function treeStructure($canv, options, data) {
   //相邻节点坐标间距
   var disItmeX = itemW + marginX;
   var disItmeY = itemH + marginY;
-  //每个节点宽高设置,间距设置END
+  //每个节点宽高设置,间距设置-------------END
 
-
+  //原始数据
   var mockData = data || [];
 
-  var NODES = "nodes";
-  var ID = "id";
-  var TEXT = "name";
+  var NODES = options.nodesName || "nodes";
+  var ID = options.idName || "id";
+  var TEXT = options.textName || "name";
 
   var $canv = $("#treecanvas");
   var canv = $canv[0];
