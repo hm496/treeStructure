@@ -22,7 +22,7 @@ function treeStructure($canv, options, data) {
   var TEXT = options.textName || "name";
 
 
-  //
+  //获取canvas,设置canvas宽高
   var $canv = $canv;
   var canv = $canv[0];
   var $canvParentDom = $canv.parent();
@@ -35,6 +35,7 @@ function treeStructure($canv, options, data) {
   canv.width = $canvParentDom.width();
   canv.height = $canvParentDom.height();
 
+  //绑定resize事件
   window.addEventListener('resize', function (ev) {
     setTimeout(function () {
       winW = $canvParentDom.width();
@@ -45,6 +46,7 @@ function treeStructure($canv, options, data) {
     }, 150);
   });
 
+  //最终渲染数据容器
   var DATA = [];
 
 //工具函数----START
@@ -93,7 +95,6 @@ function treeStructure($canv, options, data) {
 //遍历所有节点,分行,生成纵坐标y
   stepFnY(mockData, 0, null);
   function stepFnY(mockData, deep, parentData) {
-
 
     for (var i = 0; i < mockData.length; i++) {
       var item = mockData[i];

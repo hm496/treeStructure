@@ -55,6 +55,4 @@ treeStructure($("#treecanvas"), {
   idName: 'id',
   nodesName: 'nodes',
   textName: 'text',
-  align: "center",
-  hasArrow: true,
 }, mockData);
