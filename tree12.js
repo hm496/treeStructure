@@ -16,6 +16,7 @@ var mockData = [
       {
         id: 3,
         text: "丽江市公安局",
+        hiddenNodes: true,
         nodes: [
           {
             id: 4,

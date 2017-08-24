@@ -89,6 +89,20 @@ function treeStructure($canv, options, data) {
     return item;
   }
 
+//判断是否隐藏
+  function isHedden(node) {
+    var isHedden = false;
+    var item = node;
+    while (item.parentData) {
+      item = item.parentData;
+      if (item.hiddenNodes === true) {
+        isHedden = true;
+        break;
+      }
+    }
+    return isHedden;
+  }
+
 //工具函数----END
 
 
@@ -111,17 +125,21 @@ function treeStructure($canv, options, data) {
       }
 
       DATA[deep] = DATA[deep] || [];
-      DATA[deep].push(
-        $.extend(item, {
-          pid: pid,
-          pos: itemPos,
-          parentData: parentData,
-        })
-      );
-      if (item[NODES]) {
-        //parent传给child (item)
-        stepFnY(item[NODES], (deep + 1), item);
+
+      $.extend(item, {
+        pid: pid,
+        pos: itemPos,
+        parentData: parentData,
+      })
+
+      if (!isHedden(item)) {
+        DATA[deep].push(item);
+        if (item[NODES]) {
+          //parent传给child (item)
+          stepFnY(item[NODES], (deep + 1), item);
+        }
       }
+
     }
   }
 
