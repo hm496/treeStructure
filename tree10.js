@@ -18,7 +18,6 @@ window.addEventListener('resize', function (ev) {
   }, 150);
 });
 
-
 // var mockData = [
 //   {
 //     id: 1,
@@ -166,6 +165,7 @@ var mockData = [
 ];
 var DATA = [];
 
+//工具函数----START
 //遍历所有子节点
 function eachChild(parent, fn) {
   if (parent.nodes) {
@@ -187,11 +187,13 @@ function getMid(x1, x2) {
   }
   return (greater - less) / 2 + less;
 }
+//找到数组中点
 function findMid(arr) {
   var min = Math.min.apply(Math, arr);
   var max = Math.max.apply(Math, arr);
   return getMid(min, max);
 }
+//找到最左侧节点
 function getFarLeft(node) {
   var item = node;
   while (item.nodes) {
@@ -199,17 +201,25 @@ function getFarLeft(node) {
   }
   return item;
 }
+//工具函数----END
 
+//每个节点宽高设置,间距设置
+//每个节点宽高
+var itemW = 110;
+var itemH = 44;
+//每个节点位置差
+var marginX = 20;
+var marginY = 26;
+
+var disItmeX = itemW + marginX;
+var disItmeY = itemH + marginY;
+//每个节点宽高设置,间距设置END
+
+
+//遍历所有节点,分行,生成纵坐标y
+stepFnY(mockData, 0, null);
 function stepFnY(mockData, deep, parentData) {
-  //每个节点宽高
-  var itemW = 110;
-  var itemH = 44;
-  //每个节点位置差
-  var marginX = 20;
-  var marginY = 26;
 
-  var disItmeX = itemW + marginX;
-  var disItmeY = itemH + marginY;
 
   for (var i = 0; i < mockData.length; i++) {
     var item = mockData[i];
@@ -238,17 +248,6 @@ function stepFnY(mockData, deep, parentData) {
   }
 }
 
-stepFnY(mockData, 0, null);
-
-//每个节点宽高
-var itemW = 110;
-var itemH = 44;
-//每个节点位置差
-var marginX = 20;
-var marginY = 26;
-
-var disItmeX = itemW + marginX;
-var disItmeY = itemH + marginY;
 
 var finalIndex = DATA.length - 1;//最后一行
 function dealDataLine(DATA, lineNum) {
@@ -304,7 +303,6 @@ for (var i = DATA.length - 1; i > -1; i--) {
   dealDataLine(DATA, i);
 }
 
-
 //渲染canvas
 render($("#box").width(), $("#box").height());
 
@@ -318,16 +316,6 @@ $(document).off('mouseup.canv').on('mouseup.canv', function (ev) {
 });
 
 function render(w, h) {
-//每个节点宽高
-  var itemW = 110;
-  var itemH = 44;
-//每个节点位置差
-  var marginX = 20;
-  var marginY = 26;
-
-  var disItmeX = itemW + marginX;
-  var disItmeY = itemH + marginY;
-
 
   $canv.drawRect({
     layer: true,
@@ -375,16 +363,6 @@ function rectItem(item, $canv) {
   //绘制 文字和矩形
   //返回 {data,layer}
 
-  //每个节点宽高
-  var itemW = 110;
-  var itemH = 44;
-  //每个节点位置差
-  var marginX = 20;
-  var marginY = 26;
-
-  var disItmeX = itemW + marginX;
-  var disItmeY = itemH + marginY;
-
   var posRes = $.extend({
     x: 0,
     y: 0
@@ -409,12 +387,12 @@ function rectItem(item, $canv) {
   if (item.parentData) {
     var pData = item.parentData;
     var linePoints = {
-      x1: posRes.x, y1: posRes.y - 2,
+      x1: posRes.x, y1: posRes.y - 3,
       x2: posRes.x, y2: posRes.y - marginY / 2,
       x3: pData.pos.x, y3: posRes.y - marginY / 2,
-      x4: pData.pos.x, y4: pData.pos.y + itemH + 1,
+      x4: pData.pos.x, y4: pData.pos.y + itemH,
     }
-
+    //绘制连线
     var drawLineData = {
       layer: true,
       groups: ["maxBox", "element"],
@@ -457,18 +435,28 @@ function rectItem(item, $canv) {
       click: function (layer) {
         console.log(item);
       }
-    })
-    .drawText({
-      layer: true,
-      groups: ["maxBox", "element"],
-      fillStyle: '#fff',
-      strokeWidth: 2,
-      x: itemW / 2, y: itemH / 2,
-      fontSize: '14px',
-      fontFamily: 'Verdana, sans-serif',
-      lineHeight: 1.2,
-      text: text
     });
+
+  $canv.translateCanvas({
+    layer: true,
+    groups: ["maxBox", "element"],
+    translateX: itemW / 2, translateY: itemH / 2
+  })
+  $canv.drawText({
+    layer: true,
+    groups: ["maxBox", "element"],
+    fillStyle: '#fff',
+    strokeWidth: 2,
+    x: 0, y: 0,
+    fontSize: '14px',
+    fontFamily: 'Verdana, sans-serif',
+    lineHeight: 1.2,
+    text: text
+  });
+  $canv.restoreCanvas({
+    layer: true,
+    groups: ["maxBox", "element"],
+  });
 
   $canv.restoreCanvas({
     layer: true,
