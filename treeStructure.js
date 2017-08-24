@@ -16,11 +16,14 @@ function treeStructure($canv, options, data) {
   //原始数据
   var mockData = data || [];
 
+  //接收字段名
   var NODES = options.nodesName || "nodes";
   var ID = options.idName || "id";
   var TEXT = options.textName || "name";
 
-  var $canv = $("#treecanvas");
+
+  //
+  var $canv = $canv;
   var canv = $canv[0];
   var $canvParentDom = $canv.parent();
 
@@ -179,7 +182,7 @@ function treeStructure($canv, options, data) {
 //渲染canvas
   render($canvParentDom.width(), $canvParentDom.height());
 
-//光标复位
+  //光标图标复位
   $(document).off('mouseup.canv').on('mouseup.canv', function (ev) {
     if ($canv.css("cursor") === "move") {
       $canv.css({
@@ -226,7 +229,7 @@ function treeStructure($canv, options, data) {
   }
 
   function rectItem(item, $canv) {
-    //传进来data
+    //传进来数据
     //文字,坐标
     //坐标为 顶边中点
     //item原始数据对象
@@ -234,29 +237,12 @@ function treeStructure($canv, options, data) {
     var text = item[TEXT];
 
     //绘制 文字和矩形
-    //返回 {data,layer}
-
     var posRes = $.extend({
       x: 0,
       y: 0
     }, pos);
 
     //如果有父级,连线至父级
-    // $canv.drawLine({
-    //   layer: true,
-    //   groups: ["maxBox", "element"],
-    //   strokeStyle: '#000',
-    //   strokeWidth: 2,
-    //   rounded: true,
-    //   startArrow: true,
-    //   arrowRadius: 12,
-    //   arrowAngle: 60,
-    //   x1: 100, y1: 100,
-    //   x2: 150, y2: 125,
-    //   x3: 200, y3: 75,
-    //   x4: 500, y4: 75,
-    // });
-    //起点:
     if (item.parentData) {
       var pData = item.parentData;
       var linePoints = {
