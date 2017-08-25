@@ -21,19 +21,27 @@
         $canv: null,
       }
       $.extend(this.op, op);
+      this.op.disItmeX = this.op.itemW + this.op.marginX;
+      this.op.disItmeY = this.op.itemH + this.op.marginY;
     },
     initCanvas: function () {
-      if (this.op.$canv) {
-
+      if (this.op.$canv && this.op.$canv.length > 0) {
+        this.$canv = this.op.$canv;
+        this.canv = this.op.$canv[0];
+        this.$canvParentDom = this.$canv.parent();
       } else {
-        throw "where is options.$canv?";
+        throw "Error: where is options.$canv ?";
       }
 
-      canv.width = $canvParentDom.width();
-      canv.height = $canvParentDom.height();
+      this.canv.width = this.$canvParentDom.width();
+      this.canv.height = this.$canvParentDom.height();
     },
     computePosition: function () {
+      if (this.op.data) {
 
+      } else {
+        throw "Error: where is options.data ?";
+      }
     },
 
 
