@@ -20,7 +20,6 @@ var mockData = [
           {
             id: "021",
             text: "古城区公安分局",
-            hiddenNodes: true,
             nodes: [
               {
                 id: "0211",
@@ -29,16 +28,13 @@ var mockData = [
               {
                 id: "0212",
                 text: "古城区公安02",
-              },
-              {
-                id: "0213",
-                text: "古城区公安03",
-              },
+              }
             ]
           },
           {
             id: "022",
             text: "永胜县公安局",
+            hiddenNodes: true,
             nodes: [
               {
                 id: "0221",

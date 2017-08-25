@@ -103,6 +103,29 @@ function treeStructure($canv, options, data) {
     return isHedden;
   }
 
+  //找出最小合适位置changedX
+  function findMinChangeX(node) {
+    var item = node;
+    var MinPosXArr = [];
+
+    MinPosXArr.push(calcX(item));
+    while (item[NODES] && item[NODES].length > 0 && !item.hiddenNodes) {
+      item = item[NODES][0];
+      MinPosXArr.push(calcX(item));
+    }
+    return Math.max.apply(Math, MinPosXArr);
+
+    function calcX(item) {
+      var toPosX = 0;//pos.x要去的位置
+      if (item.col === 0) {
+        return 0;
+      } else {
+        toPosX = DATA[item.row][item.col - 1].pos.x + disItmeX;
+      }
+      return thisChangeX = toPosX - item.pos.x;
+    }
+  }
+
 //工具函数----END
 
 
@@ -127,6 +150,8 @@ function treeStructure($canv, options, data) {
       DATA[deep] = DATA[deep] || [];
 
       $.extend(item, {
+        row: deep,
+        col: DATA[deep].length,
         pid: pid,
         pos: itemPos,
         parentData: parentData,
@@ -145,6 +170,7 @@ function treeStructure($canv, options, data) {
 
   //DATA
   window.DATA = DATA;
+  console.log(DATA);
 
   var finalIndex = DATA.length - 1;//最后一行
   function dealDataLine(DATA, lineNum) {
@@ -172,23 +198,30 @@ function treeStructure($canv, options, data) {
         //1,计算整体最左侧坐标(子节点最左侧)
         //2,计算距离合适位置的 差值changedX
         //最左侧
-        var leftItemX = getFarLeft(tempData).pos.x;
+        // var leftItemX = getFarLeft(tempData).pos.x;
         //合适位置
-        var toPosX = lastX + itemW / 2;
-        var changedX = toPosX - leftItemX;
-        tempData.pos.x = tempData.pos.x + changedX;
-        // if (tempData.id === 1 || tempData.id === 3) {
-        //   debugger;
+        // var toPosX = lastX + itemW / 2;
+
+        // if (["02", "021", "0211"].includes(tempData.id)) {
+        // debugger;
         // }
-        //调整子节点
-        eachChild(tempData, function (child) {
-          child.pos.x += changedX;
-        });
-        lastX += tempData.sumWidth;
+
+        var changedX = findMinChangeX(tempData);
+
+        if (changedX !== 0) {
+          tempData.pos.x = tempData.pos.x + changedX;
+          //调整子节点
+          eachChild(tempData, function (child) {
+            child.pos.x += changedX;
+          });
+        }
+
+        // lastX += tempData.sumWidth;
       } else {
         tempData.pos.x = lastX + itemW / 2;
-        lastX += disItmeX;
+        // lastX += disItmeX;
       }
+      lastX = tempData.pos.x + itemW / 2 + marginX;
       sumWidth += DATA[lineIndex][i].sumWidth || disItmeX;
       sumXArr.push(tempData.pos.x);
     }
