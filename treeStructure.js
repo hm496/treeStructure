@@ -52,7 +52,7 @@ function treeStructure($canv, options, data) {
 //工具函数----START
   //遍历所有子节点
   function eachChild(parent, fn) {
-    if (parent[NODES]) {
+    if (parent[NODES] && !parent.hiddenNodes) {
       for (var i = 0; i < parent[NODES].length; i++) {
         var child = parent[NODES][i];
         fn && fn(child);
@@ -83,7 +83,7 @@ function treeStructure($canv, options, data) {
 //找到最左侧节点
   function getFarLeft(node) {
     var item = node;
-    while (item[NODES]) {
+    while (item[NODES] && item[NODES].length > 0 && !item.hiddenNodes) {
       item = item[NODES][0];
     }
     return item;
@@ -143,6 +143,8 @@ function treeStructure($canv, options, data) {
     }
   }
 
+  //DATA
+  window.DATA = DATA;
 
   var finalIndex = DATA.length - 1;//最后一行
   function dealDataLine(DATA, lineNum) {
@@ -175,6 +177,9 @@ function treeStructure($canv, options, data) {
         var toPosX = lastX + itemW / 2;
         var changedX = toPosX - leftItemX;
         tempData.pos.x = tempData.pos.x + changedX;
+        // if (tempData.id === 1 || tempData.id === 3) {
+        //   debugger;
+        // }
         //调整子节点
         eachChild(tempData, function (child) {
           child.pos.x += changedX;
