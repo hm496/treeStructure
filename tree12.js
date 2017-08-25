@@ -20,6 +20,7 @@ var mockData = [
           {
             id: "021",
             text: "古城区公安分局",
+            hiddenNodes: true,
             nodes: [
               {
                 id: "0211",
@@ -34,7 +35,6 @@ var mockData = [
           {
             id: "022",
             text: "永胜县公安局",
-            hiddenNodes: true,
             nodes: [
               {
                 id: "0221",
@@ -56,4 +56,8 @@ treeStructure($("#treecanvas"), {
   idName: 'id',
   nodesName: 'nodes',
   textName: 'text',
+  itemW: 110,
+  itemH: 44,
+  marginX: 16,
+  marginY: 26,
 }, mockData);
