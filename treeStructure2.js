@@ -29,6 +29,7 @@
       if (this.op.$canv && this.op.$canv.length > 0) {
         this.$canv = this.op.$canv;
         this.canv = this.op.$canv[0];
+        this.ctx = this.canv.getContext("2d");
         this.$canvParentDom = this.$canv.parent();
       } else {
         throw "Error: where is options.$canv ?";
@@ -213,6 +214,9 @@
       var pos = item.pos;
       var text = item[TEXT];
 
+      //换行
+      text = this.textWarp(text, this.op.itemW - 10);
+
       //绘制 文字和矩形
       var posRes = $.extend({
         x: 0,
@@ -302,7 +306,6 @@
         layer: true,
         groups: ["maxBox", "element"],
         fillStyle: '#fff',
-        strokeWidth: 2,
         x: 0, y: 0,
         fontSize: '14px',
         fontFamily: 'Verdana, sans-serif',
@@ -320,10 +323,33 @@
       });
 
     },
+    //textWarp
+    textWarp: function(text, maxWidth) {
+      var temp = "";
+      var lastTemp = "";
+      var row = [];
+
+      this.ctx.font = "14px Verdana, sans-serif";
+
+      for (var i = 0; i < text.length; i++) {
+        lastTemp = temp;
+        temp += text[i];
+        if (this.ctx.measureText(temp).width > maxWidth) {
+          row.push(lastTemp);
+          temp = text[i];
+        }
+      }
+      row.push(temp);
+
+      var res = row.join("\n");
+      return res;
+    },
     //清空
     clearItem: function() {
       this.$canv.removeLayerGroup('element');
-    },
+    }
+
+    ,
     //刷新
     refresh: function(oldPos, item) {
       this.computePosition();
@@ -340,7 +366,8 @@
         });
       }
       this.$canv.drawLayers();
-    },
+    }
+    ,
     //工具函数--------
     findMinChangeX: function(item) {
       var NODES = this.op.nodesName;
@@ -353,7 +380,8 @@
       }
       return Math.max.apply(Math, MinPosXArr);
 
-    },
+    }
+    ,
     calcX: function(item) {
       var toPosX = 0;//pos.x要去的位置
       if (item.col === 0) {
@@ -362,7 +390,8 @@
         toPosX = this.DATA[item.row][item.col - 1].pos.x + this.op.disItmeX;
       }
       return thisChangeX = toPosX - item.pos.x;
-    },
+    }
+    ,
     eachChild: function(parent, fn) {
       var NODES = this.op.nodesName;
 
@@ -380,7 +409,7 @@
   };
 
 
-  //工具函数--------
+//工具函数--------
   function isHedden(node) {
     var isHedden = false;
     var item = node;
@@ -394,7 +423,7 @@
     return isHedden;
   }
 
-  //计算中点坐标
+//计算中点坐标
   function getMid(x1, x2) {
     if (x1 > x2) {
       var greater = x1;
@@ -406,16 +435,17 @@
     return (greater - less) / 2 + less;
   }
 
-  //找到坐标数组中,边界中点
+//找到坐标数组中,边界中点
   function findMid(arr) {
     var min = Math.min.apply(Math, arr);
     var max = Math.max.apply(Math, arr);
     return getMid(min, max);
   }
 
-  //工具函数--------END
+//工具函数--------END
 
 
-  //全局
+//全局
   window.StructureCanv = StructureCanv;
-})();
+})
+();

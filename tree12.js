@@ -19,7 +19,7 @@ var mockData = [
         nodes: [
           {
             id: "021",
-            text: "古城区公安分局",
+            text: "古城区公安分局城区公安分局",
             nodes: [
               {
                 id: "0211",
