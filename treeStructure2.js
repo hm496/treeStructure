@@ -272,8 +272,8 @@
 
       //边框样式
       var rectStyle = {
-        strokeStyle: '#333',
-        strokeWidth: 1,
+        strokeStyle: '#5f5f5f',
+        strokeWidth: 2,
       }
       var selectStyle = {
         strokeStyle: '#9c00ea',
@@ -289,7 +289,7 @@
       $canv.translateCanvas({
         layer: true,
         groups: ["maxBox", "element"],
-        translateX: itemPos.x - this.op.itemW / 2, translateY: itemPos.y + 0.5
+        translateX: itemPos.x - this.op.itemW / 2, translateY: itemPos.y
       })
         .drawRect({
           layer: true,
