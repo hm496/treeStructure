@@ -9,7 +9,21 @@ var mockData = [
         nodes: [
           {
             id: "011",
-            text: "五华区公安分局"
+            text: "五华区公安分局01",
+            nodes: [
+              {
+                id: "0111",
+                text: "五华区公安01",
+              },
+              {
+                id: "0112",
+                text: "五华区公安02",
+              },
+            ]
+          },
+          {
+            id: "012",
+            text: "五华区公安分局02",
           },
         ]
       },
@@ -19,7 +33,7 @@ var mockData = [
         nodes: [
           {
             id: "021",
-            text: "古城区公安分局城区公安分局",
+            text: "古城区公安分局城区古城区公安分局城区",
             nodes: [
               {
                 id: "0211",
@@ -28,7 +42,15 @@ var mockData = [
               {
                 id: "0212",
                 text: "古城区公安02",
-              }
+              },
+              // {
+              //   id: "0213",
+              //   text: "古城区公安03",
+              // },
+              // {
+              //   id: "0214",
+              //   text: "古城区公安04",
+              // },
             ]
           },
           {
@@ -50,6 +72,7 @@ var mockData = [
     ],
   }
 ];
+
 var mockData2 = [
   {
     id: "0",
@@ -153,6 +176,7 @@ var mockData2 = [
 // }, mockData);
 
 var a = new StructureCanv({
+  initTop: 10,
   data: mockData,
   $canv: $("#treecanvas"),
 });

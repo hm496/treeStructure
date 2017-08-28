@@ -1,31 +1,38 @@
-;(function() {
+;(function () {
   function StructureCanv(options) {
     var op = options || {};
+    this.selectedItem = null;
+    this.selectedItemLayer = null;
+    this.layerItem = {};
+
+
     this.initOptions(op);
     this.initCanvas();
     this.computePosition();
     this.render();
+    //选中的item 集合
   }
 
   StructureCanv.prototype = {
     constructor: StructureCanv,
-    initOptions: function(op) {
+    initOptions: function (op) {
       this.op = {
         idName: 'id',
         nodesName: 'nodes',
         textName: 'text',
-        itemW: 110,
-        itemH: 44,
+        itemW: 150,
+        itemH: 80,
         marginX: 16,
         marginY: 26,
         data: null,
         $canv: null,
+        initTop: 0,
       }
       $.extend(this.op, op);
       this.op.disItmeX = this.op.itemW + this.op.marginX;
       this.op.disItmeY = this.op.itemH + this.op.marginY;
     },
-    initCanvas: function() {
+    initCanvas: function () {
       if (this.op.$canv && this.op.$canv.length > 0) {
         this.$canv = this.op.$canv;
         this.canv = this.op.$canv[0];
@@ -35,22 +42,10 @@
         throw "Error: where is options.$canv ?";
       }
 
-      this.initCursor();
       this.canv.width = this.$canvParentDom.width();
       this.canv.height = this.$canvParentDom.height();
     },
-    initCursor: function() {
-      var _this = this;
-      //光标图标复位
-      $(document).off('mouseup.canv').on('mouseup.canv', function(ev) {
-        if (_this.$canv.css("cursor") === "move") {
-          _this.$canv.css({
-            cursor: "auto"
-          });
-        }
-      });
-    },
-    computePosition: function() {
+    computePosition: function () {
       this.DATA = null;
       if (this.op.data) {
         this.DATA = [];
@@ -60,7 +55,7 @@
         throw "Error: where is options.data ?";
       }
     },
-    dealDataY: function(originData, deep, parentData) {
+    dealDataY: function (originData, deep, parentData) {
       var disItmeY = this.op.disItmeY;
       var TEXT = this.op.textName;
       var NODES = this.op.nodesName;
@@ -97,7 +92,7 @@
         }
       }
     },
-    dealDataX: function() {
+    dealDataX: function () {
       //从最后一行计算
       dealDataLineX = dealDataLineX.bind(this);
       for (var i = this.DATA.length - 1; i > -1; i--) {
@@ -133,7 +128,7 @@
             if (changedX !== 0) {
               tempData.pos.x = tempData.pos.x + changedX;
               //调整子节点
-              this.eachChild(tempData, function(child) {
+              this.eachChild(tempData, function (child) {
                 child.pos.x += changedX;
               });
             }
@@ -157,7 +152,7 @@
         }
       }
     },
-    render: function() {
+    render: function () {
       //渲染this.DATA
       var $canv = this.op.$canv;
       var w = this.canv.width;
@@ -169,31 +164,47 @@
         dragGroups: ['maxBox'],
         groups: ['maxBox'],
         name: "maxBox",
-        fillStyle: '#555',
+        fillStyle: '#ccc',
         x: -2 * w, y: -2 * h,
         width: 5 * w, height: 5 * h,
         fromCenter: false,
-        dragstart: function(layer) {
-          $canv.css({
-            cursor: "move"
-          });
+        dragstart: function (layer) {
+
         },
-        drag: function(layer) {
+        drag: function (layer) {
         },
-        dragstop: function(layer) {
+        dragstop: function (layer) {
           $canv.setLayer(layer, {
             x: -2 * w, y: -2 * h,
           })
             .drawLayers();
+        },
+        cursors: {
+          mousedown: 'move',
+          mouseup: 'auto'
         }
       });
 
       //绘制 文字和矩形
       this.renderItem();
+
+      //第一行居中(初始化渲染,移动)
+      if (true) {
+        var line1Arr = [];
+        for (var i = 0; i < this.DATA[0].length; i++) {
+          line1Arr.push(this.DATA[0][i].pos.x);
+        }
+        var nowMid = findMid(line1Arr);
+        var toMid = this.canv.width / 2;
+        this.$canv.setLayerGroup('element', {
+          x: "+=" + (toMid - nowMid),
+          y: "+=" + this.op.initTop,
+        });
+      }
       this.$canv.drawLayers();
     },
     //渲染节点
-    renderItem: function() {
+    renderItem: function () {
       for (var i = 0; i < this.DATA.length; i++) {
         var arr = this.DATA[i];
         for (var j = 0; j < arr.length; j++) {
@@ -202,7 +213,7 @@
         }
       }
     },
-    rectItem: function(item) {
+    rectItem: function (item) {
       var _this = this;
 
       var $canv = this.op.$canv;
@@ -230,6 +241,7 @@
 
       //如果有父级,连线至父级
       if (item.parentData) {
+        //绘制连线
         var pData = item.parentData;
 
         var itemParPos = {
@@ -241,13 +253,12 @@
           x1: itemPos.x, y1: itemPos.y - 3,
           x2: itemPos.x, y2: itemPos.y - this.op.marginY / 2,
           x3: itemParPos.x, y3: itemPos.y - this.op.marginY / 2,
-          x4: itemParPos.x, y4: itemParPos.y + this.op.itemH,
+          x4: itemParPos.x, y4: itemParPos.y + this.op.itemH + 2,
         }
-        //绘制连线
         var drawLineData = {
           layer: true,
           groups: ["maxBox", "element"],
-          strokeStyle: '#ddd',
+          strokeStyle: '#333',
           strokeWidth: 2,
           rounded: true,
           startArrow: true,
@@ -256,58 +267,94 @@
         };
         $.extend(drawLineData, linePoints);
         $canv.drawLine(drawLineData);
+        //绘制连线END
       }
 
+      //边框样式
+      var rectStyle = {
+        strokeStyle: '#333',
+        strokeWidth: 1,
+      }
+      var selectStyle = {
+        strokeStyle: '#9c00ea',
+        strokeWidth: 2,
+      }
+
+
+      if (_this.selectedItem && item.id === _this.selectedItem.id) {
+        rectStyle.strokeStyle = selectStyle.strokeStyle;
+        rectStyle.strokeWidth = selectStyle.strokeWidth;
+      }
 
       $canv.translateCanvas({
         layer: true,
         groups: ["maxBox", "element"],
-        translateX: itemPos.x - this.op.itemW / 2, translateY: itemPos.y
+        translateX: itemPos.x - this.op.itemW / 2, translateY: itemPos.y + 0.5
       })
         .drawRect({
           layer: true,
           groups: ["maxBox", "element"],
-          fillStyle: '#0092df',
+          name: "item" + item.id,
+          strokeStyle: rectStyle.strokeStyle,
+          strokeWidth: rectStyle.strokeWidth,
+          fillStyle: '#f6edce',
           x: 0, y: 0,
           width: this.op.itemW,
           height: this.op.itemH,
           cornerRadius: 10,
           fromCenter: false,
-          mouseover: function(layer) {
-            $canv.css({
-              cursor: "pointer"
-            })
+          mouseover: function (layer) {
+
           },
-          mouseout: function(layer) {
-            $canv.css({
-              cursor: "auto"
-            })
+          mouseout: function (layer) {
+
           },
-          click: function(layer) {
+          click: function (layer) {
+            // console.log(item, layer);
+            if (item.id) {
+              if (_this.selectedItem && item.id === _this.selectedItem.id) {
+                _this.selectedItem = _this.selectedItemLayer = null;
+                $canv.setLayer(layer, rectStyle);
+              } else {
+                //清除上一个
+                $canv.setLayer(_this.selectedItemLayer, rectStyle);
+                //设置当前
+                _this.selectedItem = item;
+                _this.selectedItemLayer = layer;
+                $canv.setLayer(layer, selectStyle);
+              }
+            }
+
+          },
+          dblclick: function (layer) {
             var NODES = _this.op.nodesName;
             var oldPos = {
               x: item.pos.x + layer.x,
               y: item.pos.y + layer.y
             }
-
+            _this.selectedItem = {};
             if (item[NODES] && item[NODES].length > 0) {
               item.hiddenNodes = !item.hiddenNodes;
               _this.refresh(oldPos, item);
             }
+          },
+          cursors: {
+            mouseover: 'pointer',
+            mouseout: 'auto',
           }
         });
 
       $canv.translateCanvas({
         layer: true,
         groups: ["maxBox", "element"],
-        translateX: this.op.itemW / 2, translateY: this.op.itemH / 2
+        translateX: this.op.itemW / 2, translateY: 18
       })
       $canv.drawText({
         layer: true,
         groups: ["maxBox", "element"],
-        fillStyle: '#fff',
+        fillStyle: '#333',
         x: 0, y: 0,
-        fontSize: '14px',
+        fontSize: '12px',
         fontFamily: 'Verdana, sans-serif',
         lineHeight: 1.2,
         text: text
@@ -323,8 +370,8 @@
       });
 
     },
-    //textWarp
-    textWarp: function(text, maxWidth) {
+    //文字换行
+    textWarp: function (text, maxWidth) {
       var temp = "";
       var lastTemp = "";
       var row = [];
@@ -345,13 +392,11 @@
       return res;
     },
     //清空
-    clearItem: function() {
+    clearItem: function () {
       this.$canv.removeLayerGroup('element');
-    }
-
-    ,
+    },
     //刷新
-    refresh: function(oldPos, item) {
+    refresh: function (oldPos, item) {
       this.computePosition();
       this.clearItem();
       this.renderItem();
@@ -366,10 +411,9 @@
         });
       }
       this.$canv.drawLayers();
-    }
-    ,
+    },
     //工具函数--------
-    findMinChangeX: function(item) {
+    findMinChangeX: function (item) {
       var NODES = this.op.nodesName;
 
       var MinPosXArr = [];
@@ -379,10 +423,8 @@
         MinPosXArr.push(this.calcX(item));
       }
       return Math.max.apply(Math, MinPosXArr);
-
-    }
-    ,
-    calcX: function(item) {
+    },
+    calcX: function (item) {
       var toPosX = 0;//pos.x要去的位置
       if (item.col === 0) {
         return 0;
@@ -390,9 +432,8 @@
         toPosX = this.DATA[item.row][item.col - 1].pos.x + this.op.disItmeX;
       }
       return thisChangeX = toPosX - item.pos.x;
-    }
-    ,
-    eachChild: function(parent, fn) {
+    },
+    eachChild: function (parent, fn) {
       var NODES = this.op.nodesName;
 
       if (parent[NODES] && !parent.hiddenNodes) {
